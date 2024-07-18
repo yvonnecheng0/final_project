@@ -117,6 +117,7 @@ class TestParseListings(unittest.TestCase):
     def testFormatListings(self):
         job_1 = fetch_listings(JOBS_URL)[0]
         expected_response1 = {
+            "id": "17eb6180-04a0-4148-8756-07e5c051123f",
             "date": datetime.fromtimestamp(1714588234, timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z'),
             "company": "Dunder Mifflin Paper Company",
             "title": "Assistant to the Regional Manager",
@@ -127,6 +128,7 @@ class TestParseListings(unittest.TestCase):
 
         job_2 = fetch_listings(JOBS_URL)[2]
         expected_response2 = {
+            "id": "17eb6180-04a0-4148-8756-07e5c051123f",
             "date": datetime.fromtimestamp(1714589234, timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z'),
             "company": "The Shelby Company Limited",
             "title": "Crime Boss",
