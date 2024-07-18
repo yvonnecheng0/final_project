@@ -58,7 +58,7 @@ class TestJobs(unittest.TestCase):
         listing_dict = format_listing(listings[0])
         add_job(listing_dict["id"], listing_dict["date"], listing_dict["company"], listing_dict["title"], 
                 listing_dict["locations"], listing_dict["url"], db="test_job_tracker.db")
-        
+
         self.assertEqual(isJob("17eb6180-04a0-4148-8756-07e5c051123f", "test_job_tracker.db"), True)
 
     def testAddMultipleJobs(self):
@@ -67,7 +67,7 @@ class TestJobs(unittest.TestCase):
             lDict = format_listing(listing)
             add_job(lDict["id"], lDict["date"], lDict["company"], lDict["title"], 
                 lDict["locations"], lDict["url"], db="test_job_tracker.db")
-            
+
         self.assertEqual(isJob("17eb6180-04a0-4148-8756-07e5c051126g", "test_job_tracker.db"), True)
 
 if __name__ == "__main__":

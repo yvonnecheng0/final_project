@@ -1,6 +1,8 @@
 import sqlite3
+import os
 
-def create_tables(db="job_tracker.db"):
+DEFAULT_DB = "job_tracker.db"
+def create_tables(db=DEFAULT_DB):
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
@@ -14,12 +16,12 @@ def create_tables(db="job_tracker.db"):
 
     # Creates jobs table
     c.execute('''CREATE TABLE IF NOT EXISTS jobs (
-                    id INTEGER PRIMARY KEY,
+                    id TEXT NOT NULL,
+                    date TEXT NOT NULL,
                     company TEXT NOT NULL,
                     title TEXT NOT NULL,
-                    location TEXT NOT NULL,
-                    url TEXT NOT NULL,
-                    date TEXT NOT NULL
+                    locations TEXT NOT NULL,
+                    url TEXT NOT NULL
                 )''')
 
     # Creates applications table
@@ -58,7 +60,7 @@ def create_tables(db="job_tracker.db"):
     conn.close()
 
 # Adds a new user to users database, if user already exists return 1 as error code, return 2 if unknown failure
-def register_user(username, email, password, db="job_tracker.db"):
+def register_user(username, email, password, db=DEFAULT_DB):
     conn = sqlite3.connect(db)
     c = conn.cursor()  
     try:
@@ -68,15 +70,17 @@ def register_user(username, email, password, db="job_tracker.db"):
     except sqlite3.IntegrityError as e:
         if 'UNIQUE constraint failed' in str(e):
             print("Error: Username or email already exists.")
+            conn.close()
             return 1
         else:
             print(f"Error: {e}")
+            conn.close()
             return 2
     finally:
         conn.close()
 
 # Returns if that username exists in database
-def is_user(username, db="job_tracker.db"):
+def is_user(username, db=DEFAULT_DB):
     conn = sqlite3.connect(db)
     c = conn.cursor()
     c.execute('''SELECT id FROM users WHERE username = ?''', (username,))
@@ -86,35 +90,46 @@ def is_user(username, db="job_tracker.db"):
     return result is not None
 
 # Removes a user to users database, returns 1 if user doesn't exist, returns 2 if unknown failure
-def remove_user(username, db="job_tracker.db"):
+def remove_user(username, db=DEFAULT_DB):
     try:
         conn = sqlite3.connect(db)
         c = conn.cursor()
         if not is_user(username, db=db):
+            conn.close()
             return 1
         c.execute("DELETE FROM users WHERE username = ?", (username,))
         conn.commit()
     except sqlite3.Error as e:
         print(f"Error removing user: {e}")
+        conn.close()
         return 2
     finally:
         if conn:
             conn.close()
 
-# Adds a new job to jobs table
-def add_job(id, company, title, location, url, date, db="job_tracker.db"):
+def isJob(job_id, db=DEFAULT_DB):
     conn = sqlite3.connect(db)
     c = conn.cursor()
-    
-    # Insert a new job into the jobs table
-    c.execute('''INSERT INTO jobs (id, company, title, location, url, date)
-                 VALUES (?, ?, ?, ?, ?)''', (id, company, title, location, url, date))
-    
+    c.execute("SELECT 1 FROM jobs WHERE id = ?", (job_id,))
+    result = c.fetchone()
+    conn.close()
+    return result is not None
+
+# Adds a new job to jobs table
+def add_job(id, date, company, title, locations, url, db=DEFAULT_DB):
+    if isJob(id, db):
+        print(f"Job with ID {id} already exists. Not inserting.")
+        return
+    conn = sqlite3.connect(db)
+    c = conn.cursor()
+    locations_str = ','.join(locations)
+    c.execute('''INSERT INTO jobs (id, date, company, title, locations, url)
+                 VALUES (?, ?, ?, ?, ?, ?)''', (id, date, company, title, locations_str, url))
     conn.commit()
     conn.close()
 
 # Adds a new application to applications table
-def add_application(user_id, job_id, application_date, status, date_last_updated, recruiter_name=None, recruiter_email=None, db="job_tracker.db"):
+def add_application(user_id, job_id, application_date, status, date_last_updated, recruiter_name=None, recruiter_email=None, db=DEFAULT_DB):
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
@@ -125,7 +140,7 @@ def add_application(user_id, job_id, application_date, status, date_last_updated
     conn.close()
 
 # Updates "status" column in applications database, allows for "date" to be updated too
-def update_application_status(application_id, status, date_last_updated, db="job_tracker.db"):
+def update_application_status(application_id, status, date_last_updated, db=DEFAULT_DB):
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
@@ -137,7 +152,7 @@ def update_application_status(application_id, status, date_last_updated, db="job
     conn.close()
 
 # Updates "recruiter info" column in applications database, allows for "date" to be updated too
-def update_recruiter_info(application_id, date_last_updated, recruiter_name=None, recruiter_email=None, db="job_tracker.db"):
+def update_recruiter_info(application_id, date_last_updated, recruiter_name=None, recruiter_email=None, db=DEFAULT_DB):
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
@@ -149,17 +164,40 @@ def update_recruiter_info(application_id, date_last_updated, recruiter_name=None
     conn.close()
 
 
+def print_table(table, db):
+    conn = sqlite3.connect(db)
+    c = conn.cursor()
+    c.execute(f"SELECT * FROM {table}")
+    rows = c.fetchall()
+    column_names = [description[0] for description in c.description]
+    print(f"{' | '.join(column_names)}")
+    for row in rows:
+        print(f"{' | '.join(map(str, row))}")
+    
+    conn.close()
+
 # !!! DO NOT RUN THIS METHOD UNLESS YOU WANT TO DELETE ALL THE TABLES FROM THE DATABASE !!!
 # !!! FOR TESTING AND DEBUGGING PURPOSES ONLY !!!
 
 def reset_all(db):
-    conn = sqlite3.connect(db)
-    c = conn.cursor()
-    c.execute('''DELETE FROM users''')
-    c.execute('''DELETE FROM jobs''')
-    c.execute('''DELETE FROM applications''')
-    c.execute('''DROP TABLE IF EXISTS users''')
-    c.execute('''DROP TABLE IF EXISTS jobs''')
-    c.execute('''DROP TABLE IF EXISTS applications''')
-    conn.commit()
-    conn.close()
+    if not os.path.exists(db):
+        print("Can't delete a database that doesn't exist!")
+        return 1
+    try:
+        with sqlite3.connect(db) as conn:
+            c = conn.cursor()
+            c.execute('''DELETE FROM users''')
+            c.execute('''DELETE FROM jobs''')
+            c.execute('''DELETE FROM applications''')
+            c.execute('''DROP TABLE IF EXISTS users''')
+            c.execute('''DROP TABLE IF EXISTS jobs''')
+            c.execute('''DROP TABLE IF EXISTS applications''')
+            conn.commit()
+    except sqlite3.OperationalError as e:
+        print(f"Error: {e}")
+        return 1
+    finally:
+        if os.path.exists(db):
+            os.remove(db)
+            print(f"Database {db} removed.")
+    return 0
