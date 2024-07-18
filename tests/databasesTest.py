@@ -27,6 +27,7 @@ class TestUsers(unittest.TestCase):
     
     # Tests that duplicate usernames are not possible
     def testBadUser(self):
+        self.setup()
         attempt1 = register_user("Sonya4U", "newEmail@bob.net", "newPassword", db="test_job_tracker.db")
         self.assertEqual(attempt1, 1)
 
@@ -69,6 +70,7 @@ class TestJobs(unittest.TestCase):
                 lDict["locations"], lDict["url"], db="test_job_tracker.db")
 
         self.assertEqual(isJob("17eb6180-04a0-4148-8756-07e5c051126g", "test_job_tracker.db"), True)
+        reset_all("test_job_tracker.db")
 
 if __name__ == "__main__":
     unittest.main()
