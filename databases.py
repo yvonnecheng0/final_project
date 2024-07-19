@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from datetime import date
 
 DEFAULT_DB = "job_tracker.db"
 
@@ -30,7 +31,7 @@ def create_tables(db=DEFAULT_DB):
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_id INTEGER NOT NULL,
                     job_id INTEGER NOT NULL,
-                    application_date TEXT NOT NULL,
+                    application_date TEXT,
                     status TEXT DEFAULT 'Ready to Apply' NOT NULL,
                     date_last_updated TEXT NOT NULL,
                     recruiter_name TEXT,
@@ -153,6 +154,12 @@ def add_application(user_id, job_id, application_date, status, date_last_updated
     conn.commit()
     conn.close()
 
+# Adds an application from user_id and job_id. Default application/update date set to today, status set to Ready to Apply
+def quick_add_app(user_id, job_id, db=DEFAULT_DB):
+    app_date = date.today().strftime('%Y-%m-%d')
+    add_application(user_id, job_id, app_date, "Ready to Apply", app_date, None, None, db=db)
+
+# Returns if an appliation for that user_id (can also be username) and job exists, returns 1 if no user found, 2 if job not found
 def isApplication(user_id, job_id, db=DEFAULT_DB):
     if not is_user(user_id, db=db):
         print("User not found.")
@@ -167,29 +174,86 @@ def isApplication(user_id, job_id, db=DEFAULT_DB):
     conn.close()
     return result is not None
 
-# Updates "status" column in applications database, allows for "date" to be updated too
-def update_application_status(application_id, status, date_last_updated, db=DEFAULT_DB):
+# Updates "status" column in applications database, updates date to today
+def update_application_status(application_id, status, db=DEFAULT_DB):
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
     c.execute('''UPDATE applications
-                 SET status = ?, date_last_updated = ?
+                 SET status = ?
                  WHERE id = ?''',
-              (status, date_last_updated, application_id))
+              (status, application_id))
     conn.commit()
     conn.close()
+    update_date(application_id, db=db)
 
-# Updates "recruiter info" column in applications database, allows for "date" to be updated too
-def update_recruiter_info(application_id, date_last_updated, recruiter_name=None, recruiter_email=None, db=DEFAULT_DB):
+# Updates "date last updated" to today for a given application
+def update_date(application_id, db=DEFAULT_DB):
+    today = date.today().strftime('%Y-%m-%d')
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
+    c.execute('''UPDATE applications
+                 SET date_last_updated = ?
+                 WHERE id = ?''',
+              (today, application_id))
+    conn.commit()
+    conn.close()
+
+# Updates "recruiter info" column in applications database, updates date to today
+def update_recruiter_info(application_id, recruiter_name=None, recruiter_email=None, db=DEFAULT_DB):
+    today = date.today().strftime('%Y-%m-%d')
+    conn = sqlite3.connect(db)
+    c = conn.cursor()
     c.execute('''UPDATE applications
                  SET date_last_updated = ?, recruiter_name = ?, recruiter_email = ?
                  WHERE id = ?''',
-              (date_last_updated, recruiter_name, recruiter_email, application_id))
+              (today, recruiter_name, recruiter_email, application_id))
     conn.commit()
     conn.close()
+    update_date(application_id, db=db)
+
+
+# GETTER METHODS
+def get_status(application_id, db=DEFAULT_DB):
+    conn = sqlite3.connect(db)
+    c = conn.cursor()
+    c.execute('''SELECT status FROM applications WHERE id = ?''', (application_id,))
+    result = c.fetchone()
+    conn.close()
+    return result[0] if result else None
+
+def get_user_id(application_id, db=DEFAULT_DB):
+    conn = sqlite3.connect(db)
+    c = conn.cursor()
+    c.execute('''SELECT user_id FROM applications WHERE id = ?''', (application_id,))
+    result = c.fetchone()
+    conn.close()
+    return result[0] if result else None
+
+def get_job_id(application_id, db=DEFAULT_DB):
+    conn = sqlite3.connect(db)
+    c = conn.cursor()
+    c.execute('''SELECT job_id FROM applications WHERE id = ?''', (application_id,))
+    result = c.fetchone()
+    conn.close()
+    return result[0] if result else None
+
+def get_recruiter_name(application_id, db=DEFAULT_DB):
+    conn = sqlite3.connect(db)
+    c = conn.cursor()
+    c.execute('''SELECT recruiter_name FROM applications WHERE id = ?''', (application_id,))
+    result = c.fetchone()
+    conn.close()
+    return result[0] if result else None
+
+def get_recruiter_email(application_id, db=DEFAULT_DB):
+    conn = sqlite3.connect(db)
+    c = conn.cursor()
+    c.execute('''SELECT recruiter_email FROM applications WHERE id = ?''', (application_id,))
+    result = c.fetchone()
+    conn.close()
+    return result[0] if result else None
 
 
 def print_table(table, db):
