@@ -2,6 +2,7 @@ import sqlite3
 import os
 
 DEFAULT_DB = "job_tracker.db"
+
 def create_tables(db=DEFAULT_DB):
     conn = sqlite3.connect(db)
     c = conn.cursor()
@@ -16,7 +17,7 @@ def create_tables(db=DEFAULT_DB):
 
     # Creates jobs table
     c.execute('''CREATE TABLE IF NOT EXISTS jobs (
-                    id TEXT NOT NULL,
+                    id TEXT PRIMARY KEY NOT NULL,
                     date TEXT NOT NULL,
                     company TEXT NOT NULL,
                     title TEXT NOT NULL,
@@ -79,11 +80,14 @@ def register_user(username, email, password, db=DEFAULT_DB):
     finally:
         conn.close()
 
-# Returns if that username exists in database
-def is_user(username, db=DEFAULT_DB):
+# Returns if that username or user id exists in database
+def is_user(id_or_username, db=DEFAULT_DB):
     conn = sqlite3.connect(db)
     c = conn.cursor()
-    c.execute('''SELECT id FROM users WHERE username = ?''', (username,))
+    if isinstance(id_or_username, int):
+         c.execute('''SELECT id FROM users WHERE id = ?''', (id_or_username,))
+    else:
+        c.execute('''SELECT id FROM users WHERE username = ?''', (id_or_username,))
     result = c.fetchone()
     conn.close()
     
@@ -110,7 +114,7 @@ def remove_user(username, db=DEFAULT_DB):
 def isJob(job_id, db=DEFAULT_DB):
     conn = sqlite3.connect(db)
     c = conn.cursor()
-    c.execute("SELECT 1 FROM jobs WHERE id = ?", (job_id,))
+    c.execute("SELECT id FROM jobs WHERE id = ?", (job_id,))
     result = c.fetchone()
     conn.close()
     return result is not None
@@ -128,8 +132,18 @@ def add_job(id, date, company, title, locations, url, db=DEFAULT_DB):
     conn.commit()
     conn.close()
 
-# Adds a new application to applications table
+# Adds a new job from the dictionary returned from listings.format_listings 
+def quick_add_job(dic, db):
+    add_job(dic["id"], dic["date"], dic["company"], dic["title"], dic["locations"], dic["url"], db=db)
+
+# Adds a new application to applications table, returns 1 if user not found, 2 if job not found
 def add_application(user_id, job_id, application_date, status, date_last_updated, recruiter_name=None, recruiter_email=None, db=DEFAULT_DB):
+    if not is_user(user_id, db=db):
+        print("User not found.")
+        return 1
+    elif not isJob(job_id, db=db):
+        print("Job not found.")
+        return 2
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
@@ -138,6 +152,20 @@ def add_application(user_id, job_id, application_date, status, date_last_updated
               (user_id, job_id, application_date, status, date_last_updated, recruiter_name, recruiter_email))
     conn.commit()
     conn.close()
+
+def isApplication(user_id, job_id, db=DEFAULT_DB):
+    if not is_user(user_id, db=db):
+        print("User not found.")
+        return 1
+    elif not isJob(job_id, db=db):
+        print("Job not found.")
+        return 2
+    conn = sqlite3.connect(db)
+    c = conn.cursor()
+    c.execute('SELECT 1 FROM applications WHERE user_id = ? AND job_id = ?', (user_id, job_id))
+    result = c.fetchone()
+    conn.close()
+    return result is not None
 
 # Updates "status" column in applications database, allows for "date" to be updated too
 def update_application_status(application_id, status, date_last_updated, db=DEFAULT_DB):
@@ -165,6 +193,7 @@ def update_recruiter_info(application_id, date_last_updated, recruiter_name=None
 
 
 def print_table(table, db):
+    print("\n")
     conn = sqlite3.connect(db)
     c = conn.cursor()
     c.execute(f"SELECT * FROM {table}")
@@ -175,6 +204,7 @@ def print_table(table, db):
         print(f"{' | '.join(map(str, row))}")
     
     conn.close()
+    print("\n")
 
 # !!! DO NOT RUN THIS METHOD UNLESS YOU WANT TO DELETE ALL THE TABLES FROM THE DATABASE !!!
 # !!! FOR TESTING AND DEBUGGING PURPOSES ONLY !!!
