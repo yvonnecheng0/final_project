@@ -23,12 +23,13 @@ def fetch_listings(url):
 
 # Parses through a single listing and formats the data. Returns relevant data as dictionary
 def format_listing(listing):
+    id = listing["id"]
     date_updated = datetime.fromtimestamp(listing['date_updated'], timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z')
     company_name = listing["company_name"]
     role_title = listing["title"]
     role_locations = listing["locations"]
     posting_url = listing["url"]
-    return {"date": date_updated, "company": company_name, "title": role_title, "locations": role_locations, "url": posting_url}
+    return {"id": id, "date": date_updated, "company": company_name, "title": role_title, "locations": role_locations, "url": posting_url}
 
 # Gets the n most recently posted internship listings
 def get_most_recent_listings(listings, n):

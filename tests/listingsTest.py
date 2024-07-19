@@ -12,11 +12,7 @@ from unittest.mock import patch
 JOBS_URL = "https://raw.githubusercontent.com/hzlsrdz/mock-jobs/main/good_jobs.json"
 BAD_URL = "https://github.com/hzlsrdz/mock-jobs/blob/main/good_jobs.json"
 
-class TestFetchListings(unittest.TestCase):
-    
-    # Tests that a valid URL returns data in this specific JSON format
-    def test_fetch_listings(self):
-        expected_response = [
+MOCK_JSON = [
             {
                 "date_updated": 1714588234,
                 "url": "https://en.wikipedia.org/wiki/The_Office_(American_TV_series)",
@@ -63,7 +59,7 @@ class TestFetchListings(unittest.TestCase):
                 "company_name": "The Shelby Company Limited",
                 "title": "Crime Boss",
                 "source": "Netflix",
-                "id": "17eb6180-04a0-4148-8756-07e5c051123f",
+                "id": "17eb6180-04a0-4148-8756-07e5c051126g",
                 "date_posted": 1714688234,
                 "company_url": "",
                 "is_visible": True
@@ -80,16 +76,21 @@ class TestFetchListings(unittest.TestCase):
                 "company_name": "Blog",
                 "title": "Gossip Girl",
                 "source": "Secret",
-                "id": "27e18275-9232-498e-b2b3-409d2f248775",
+                "id": "27e18275-9232-498e-b2b3-409d2f2487984",
                 "date_posted": 1714615432,
                 "company_url": "",
                 "is_visible": True
             }
         ]
-        
+
+
+class TestFetchListings(unittest.TestCase):
+    
+    # Tests that a valid URL returns data in this specific JSON format
+    def test_fetch_listings(self):
         actual_response = fetch_listings(JOBS_URL)
         
-        self.assertEqual(actual_response, expected_response)
+        self.assertEqual(actual_response, MOCK_JSON)
 
     # Tests that a JSON URL that isn't "raw" returns an empty list
     def test_fetch_wrong_url(self):
@@ -117,6 +118,7 @@ class TestParseListings(unittest.TestCase):
     def testFormatListings(self):
         job_1 = fetch_listings(JOBS_URL)[0]
         expected_response1 = {
+            "id": "17eb6180-04a0-4148-8756-07e5c051123f",
             "date": datetime.fromtimestamp(1714588234, timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z'),
             "company": "Dunder Mifflin Paper Company",
             "title": "Assistant to the Regional Manager",
@@ -127,6 +129,7 @@ class TestParseListings(unittest.TestCase):
 
         job_2 = fetch_listings(JOBS_URL)[2]
         expected_response2 = {
+            "id": "17eb6180-04a0-4148-8756-07e5c051126g",
             "date": datetime.fromtimestamp(1714589234, timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z'),
             "company": "The Shelby Company Limited",
             "title": "Crime Boss",
