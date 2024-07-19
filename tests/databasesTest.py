@@ -88,19 +88,23 @@ class TestJobs(unittest.TestCase):
         reset_all(TEST_DB)
 
 class testApplications(unittest.TestCase):
+
+    mock_users = {"Karma4Me": "332feedH!!", "L00k18": "4Jejmsoww9eq", "oH30D": "jelo@j4skjw", "yoUUUw": "hebjJO@092e"}
     
     def setUp2(self):
         reset_all(TEST_DB)
         create_tables(TEST_DB)
         register_user("NickiFan", "areYouAFan@like.net", "dontp1ay", db=TEST_DB)
         listings = fetch_listings(JOBS_URL)
-        listing1 = format_listing(listings[0])
-        quick_add_job(listing1, db=TEST_DB)
+        for listing in listings:
+            lDict = format_listing(listing)
+            quick_add_job(lDict, db=TEST_DB)
+        for user in self.mock_users.keys():
+            register_user(user, user+"@fake.edu", self.mock_users[user], db=TEST_DB)
 
     # Tests adding an application
     def testAddApp(self):
         self.setUp2()
-        print_table("jobs", TEST_DB)
         add_application(1, "17eb6180-04a0-4148-8756-07e5c051123f", "2024-07-19 15:51:34 UTC", "Ready to Apply", "2024-07-19 18:30:34 UTC",
                         "Cardi", "t09skd@hotmail.com", db=TEST_DB)
         
@@ -119,14 +123,28 @@ class testApplications(unittest.TestCase):
     # Tests that add_application returns 2 if there is no job in jobs with that id
     def testNoJob(self):
         self.setUp2()
-        print_table("users", TEST_DB)
         x = add_application(1, "17eolivia80-04a0-4148-8756-07jjdjww23f", "2024-07-19 15:51:34 UTC", "Ready to Apply", "2024-07-19 18:30:34 UTC",
                         "Cardi", "t09skd@hotmail.com", db=TEST_DB)
         
         self.assertEqual(x, 2)
         reset_all(TEST_DB)
     
+    def testQuickAddApp(self):
+        self.setUp2()
+        quick_add_app(1, "17eb6180-04a0-4148-8756-07e5c051123f", TEST_DB)
+        self.assertEqual(isApplication(1, "17eb6180-04a0-4148-8756-07e5c051123f", db=TEST_DB), True)
+        reset_all(TEST_DB)
 
+    def testUpdateApp(self):
+        self.setUp2()
+        quick_add_app(1, "17eb6180-04a0-4148-8756-07e5c051123f", TEST_DB)
+        quick_add_app(1, "27e18275-9232-498e-b2b3-409d2f248775", TEST_DB)
+
+        update_application_status(2, "OA Offered", TEST_DB)
+        self.assertEqual(get_status(2, TEST_DB), "OA Offered")
+
+        update_recruiter_info(2, "Lee", "sweetpea@company.name", TEST_DB)
+        self.assertEqual(get_recruiter_email(2, TEST_DB), "sweetpea@company.name")
 
 if __name__ == "__main__":
     unittest.main()
