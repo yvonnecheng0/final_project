@@ -18,10 +18,14 @@ def create_tables(db=DEFAULT_DB):
 
     # Creates jobs table
     c.execute('''CREATE TABLE IF NOT EXISTS jobs (
-                    id TEXT PRIMARY KEY NOT NULL,
-                    date TEXT NOT NULL,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    posted TEXT NOT NULL,
+                    updated TEXT NOT NULL,
                     company TEXT NOT NULL,
                     title TEXT NOT NULL,
+                    season TEXT NOT NULL,
+                    sponsorship TEXT NOT NULL,
+                    active BOOLEAN NOT NULL,
                     locations TEXT NOT NULL,
                     url TEXT NOT NULL
                 )''')
@@ -71,11 +75,9 @@ def register_user(username, email, password, db=DEFAULT_DB):
         conn.commit()
     except sqlite3.IntegrityError as e:
         if 'UNIQUE constraint failed' in str(e):
-            print("Error: Username or email already exists.")
             conn.close()
             return 1
         else:
-            print(f"Error: {e}")
             conn.close()
             return 2
     finally:
@@ -105,45 +107,52 @@ def remove_user(username, db=DEFAULT_DB):
         c.execute("DELETE FROM users WHERE username = ?", (username,))
         conn.commit()
     except sqlite3.Error as e:
-        print(f"Error removing user: {e}")
         conn.close()
         return 2
     finally:
         if conn:
             conn.close()
 
-def isJob(job_id, db=DEFAULT_DB):
+def isJob(company, role, season, db=DEFAULT_DB):
+    conn = sqlite3.connect(db)
+    c = conn.cursor()
+    c.execute("SELECT id FROM jobs WHERE company = ? AND title = ? AND season = ?", (company, role, season))
+    result_dupe = c.fetchone()
+    conn.close()
+    return result_dupe is not None
+
+def isJobID(job_id, db=DEFAULT_DB):
     conn = sqlite3.connect(db)
     c = conn.cursor()
     c.execute("SELECT id FROM jobs WHERE id = ?", (job_id,))
-    result = c.fetchone()
-    conn.close()
-    return result is not None
+    result_id = c.fetchone()
+    return result_id is not None
 
 # Adds a new job to jobs table
-def add_job(id, date, company, title, locations, url, db=DEFAULT_DB):
-    if isJob(id, db):
-        print(f"Job with ID {id} already exists. Not inserting.")
+def add_job(posted_date, updated, company, title, season, sponsorship, active, locations, url, db=DEFAULT_DB):
+    if isJob(company, title, season, db):
+        print(f"The {season} {title} at {company} already exists. Not inserting.")
         return
     conn = sqlite3.connect(db)
     c = conn.cursor()
     locations_str = ','.join(locations)
-    c.execute('''INSERT INTO jobs (id, date, company, title, locations, url)
-                 VALUES (?, ?, ?, ?, ?, ?)''', (id, date, company, title, locations_str, url))
+    c.execute('''
+        INSERT INTO jobs (posted, updated, company, title, season, sponsorship, active, locations, url)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (posted_date, updated, company, title, season, sponsorship, active, locations_str, url))
     conn.commit()
     conn.close()
 
 # Adds a new job from the dictionary returned from listings.format_listings 
-def quick_add_job(dic, db):
-    add_job(dic["id"], dic["date"], dic["company"], dic["title"], dic["locations"], dic["url"], db=db)
+def quick_add_job(dic, db=DEFAULT_DB):
+    add_job(dic["posted"], dic["updated"], dic["company"], dic["title"], 
+            dic["season"], dic["sponsorship"], dic["active"], dic["locations"], dic["url"], db=db)
 
 # Adds a new application to applications table, returns 1 if user not found, 2 if job not found
 def add_application(user_id, job_id, application_date, status, date_last_updated, recruiter_name=None, recruiter_email=None, db=DEFAULT_DB):
     if not is_user(user_id, db=db):
-        print("User not found.")
         return 1
-    elif not isJob(job_id, db=db):
-        print("Job not found.")
+    elif not isJobID(job_id, db=db):
         return 2
     conn = sqlite3.connect(db)
     c = conn.cursor()
@@ -162,10 +171,8 @@ def quick_add_app(user_id, job_id, db=DEFAULT_DB):
 # Returns if an appliation for that user_id (can also be username) and job exists, returns 1 if no user found, 2 if job not found
 def isApplication(user_id, job_id, db=DEFAULT_DB):
     if not is_user(user_id, db=db):
-        print("User not found.")
         return 1
-    elif not isJob(job_id, db=db):
-        print("Job not found.")
+    elif not isJobID(job_id, db=db):
         return 2
     conn = sqlite3.connect(db)
     c = conn.cursor()

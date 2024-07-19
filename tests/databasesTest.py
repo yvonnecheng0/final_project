@@ -68,11 +68,11 @@ class TestJobs(unittest.TestCase):
         create_tables(TEST_DB)
         listings = fetch_listings(JOBS_URL)
 
-        listing_dict = format_listing(listings[0])
-        add_job(listing_dict["id"], listing_dict["date"], listing_dict["company"], listing_dict["title"], 
-                listing_dict["locations"], listing_dict["url"], db=TEST_DB)
+        dic = format_listing(listings[0])
+        add_job(dic["posted"], dic["updated"], dic["company"], dic["title"], 
+            dic["season"], dic["sponsorship"], dic["active"], dic["locations"], dic["url"], db=TEST_DB)
         
-        self.assertEqual(isJob("17eb6180-04a0-4148-8756-07e5c051123f", TEST_DB), True)
+        self.assertEqual(isJob("Dunder Mifflin Paper Company", "Assistant to the Regional Manager", "Summer", TEST_DB), True)
         reset_all(TEST_DB)
 
     # Tests adding multiple jobs
@@ -81,10 +81,9 @@ class TestJobs(unittest.TestCase):
         listings = fetch_listings(JOBS_URL)
         for listing in listings:
             lDict = format_listing(listing)
-            add_job(lDict["id"], lDict["date"], lDict["company"], lDict["title"], 
-                lDict["locations"], lDict["url"], db=TEST_DB)
+            quick_add_job(lDict, TEST_DB)
 
-        self.assertEqual(isJob("17eb6180-04a0-4148-8756-07e5c051126g", TEST_DB), True)
+        self.assertEqual(isJobID(3, TEST_DB), True)
         reset_all(TEST_DB)
 
 class testApplications(unittest.TestCase):
@@ -105,16 +104,16 @@ class testApplications(unittest.TestCase):
     # Tests adding an application
     def testAddApp(self):
         self.setUp2()
-        add_application(1, "17eb6180-04a0-4148-8756-07e5c051123f", "2024-07-19 15:51:34 UTC", "Ready to Apply", "2024-07-19 18:30:34 UTC",
+        add_application(1, 1, "2024-07-19 15:51:34 UTC", "Ready to Apply", "2024-07-19 18:30:34 UTC",
                         "Cardi", "t09skd@hotmail.com", db=TEST_DB)
         
-        self.assertEqual(isApplication(1, "17eb6180-04a0-4148-8756-07e5c051123f", db=TEST_DB), True)
+        self.assertEqual(isApplication(1, 1, db=TEST_DB), True)
         reset_all(TEST_DB)
     
     # Tests that add_application returns 1 if there is no user in users with that id or username
     def testNoUser(self):
         self.setUp2()
-        x = add_application(9999, "17eb6180-04a0-4148-8756-07e5c051123f", "2024-07-19 15:51:34 UTC", "Ready to Apply", "2024-07-19 18:30:34 UTC",
+        x = add_application(9999, 1, "2024-07-19 15:51:34 UTC", "Ready to Apply", "2024-07-19 18:30:34 UTC",
                         "Cardi", "t09skd@hotmail.com", db=TEST_DB)
         
         self.assertEqual(x, 1)
@@ -131,14 +130,14 @@ class testApplications(unittest.TestCase):
     
     def testQuickAddApp(self):
         self.setUp2()
-        quick_add_app(1, "17eb6180-04a0-4148-8756-07e5c051123f", TEST_DB)
-        self.assertEqual(isApplication(1, "17eb6180-04a0-4148-8756-07e5c051123f", db=TEST_DB), True)
+        quick_add_app(1, 1, TEST_DB)
+        self.assertEqual(isApplication(1, 1, db=TEST_DB), True)
         reset_all(TEST_DB)
 
     def testUpdateApp(self):
         self.setUp2()
-        quick_add_app(1, "17eb6180-04a0-4148-8756-07e5c051123f", TEST_DB)
-        quick_add_app(1, "27e18275-9232-498e-b2b3-409d2f248775", TEST_DB)
+        quick_add_app(1, 1, TEST_DB)
+        quick_add_app(1, 2, TEST_DB)
 
         update_application_status(2, "OA Offered", TEST_DB)
         self.assertEqual(get_status(2, TEST_DB), "OA Offered")
