@@ -50,22 +50,7 @@ def get_most_recent_listings(listings, n):
     listings_sorted = sorted(listings, key=lambda x: x['date_updated'], reverse=True)
     return listings_sorted[:n]
 
-# Main method that handles user input
-def main():
-    setListings()
-    '''
-    while True:
-        listings = fetch_listings(REPO_URL)
-        if listings:
-            n = int(input("Enter the number of most recent job listings to display: "))
-            most_recent_listings = get_most_recent_listings(listings, n)
-            display_listings(most_recent_listings)
-            print(f"Those were the most recent {n} listings.\n")
-            break
-        else:
-            print("No listings found.")
-            '''
-
+# Method to initialize everything, deletes previous jobs_tracker.db if it existed
 def setListings():
     reset_all("job_tracker.db")
     create_tables()
@@ -73,9 +58,3 @@ def setListings():
     for listing in listings:
         list_dict = format_listing(listing)
         quick_add_job(list_dict)
-    print_table("jobs", "job_tracker.db")
-
-    
-
-if __name__ == "__main__":
-    main()
