@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Jobs</title>
+</head>
+<body>
+    <h1>Jobs Table</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Posted</th>
+                <th>Updated</th>
+                <th>Company</th>
+                <th>Title</th>
+                <th>Season</th>
+                <th>Sponsorship</th>
+                <th>Active</th>
+                <th>Locations</th>
+                <th>URL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in jobs %}
+            <tr>
+                <td>{{ job[0] }}</td>
+                <td>{{ job[1] }}</td>
+                <td>{{ job[2] }}</td>
+                <td>{{ job[3] }}</td>
+                <td>{{ job[4] }}</td>
+                <td>{{ job[5] }}</td>
+                <td>{{ job[6] }}</td>
+                <td>{{ job[7] }}</td>
+                <td>{{ job[8] }}</td>
+                <td>{{ job[9] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

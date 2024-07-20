@@ -114,32 +114,43 @@ class TestFetchListings(unittest.TestCase):
 
 class TestParseListings(unittest.TestCase):
 
+    def setUp(self):
+        # Fetch listings once and store them for use in tests
+        self.listings = fetch_listings(JOBS_URL)
+
     # Tests that listings are formatted correctly
     def testFormatListings(self):
-        job_1 = fetch_listings(JOBS_URL)[0]
+        # Test the formatting of the first job listing
+        job_1 = self.listings[0]
         expected_response1 = {
-            "id": "17eb6180-04a0-4148-8756-07e5c051123f",
-            "date": datetime.fromtimestamp(1714588234, timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z'),
+            "posted": datetime.fromtimestamp(1714588234, timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z'),
+            "updated": datetime.fromtimestamp(1714588234, timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z'),
             "company": "Dunder Mifflin Paper Company",
             "title": "Assistant to the Regional Manager",
+            "season": "Summer",
+            "sponsorship": "Offers Sponsorship",
+            "active": 1,  # Converted True to 1
             "locations": ["Scranton, PA"],
             "url": "https://en.wikipedia.org/wiki/The_Office_(American_TV_series)"
         }
         actual_response1 = format_listing(job_1)
+        self.assertEqual(actual_response1, expected_response1, "Mismatch in job 1 formatting")
 
-        job_2 = fetch_listings(JOBS_URL)[2]
+        # Test the formatting of the second job listing
+        job_2 = self.listings[1]
         expected_response2 = {
-            "id": "17eb6180-04a0-4148-8756-07e5c051126g",
-            "date": datetime.fromtimestamp(1714589234, timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z'),
-            "company": "The Shelby Company Limited",
-            "title": "Crime Boss",
-            "locations": ["Birmingham, PA", "Antioch, CA", "Bay Point, CA"],
-            "url": "https://en.wikipedia.org/wiki/Peaky_Blinders_(TV_series)"
+            "posted": datetime.fromtimestamp(1714613432, timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z'),
+            "updated": datetime.fromtimestamp(1714613432, timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z'),
+            "company": "Blog",
+            "title": "Gossip Girl",
+            "season": "Summer",
+            "sponsorship": "Offers Sponsorship",
+            "active": 1,  # Converted True to 1
+            "locations": ["New York, NY"],
+            "url": "https://en.wikipedia.org/wiki/Gossip_Girl"
         }
         actual_response2 = format_listing(job_2)
-
-        self.assertEqual(actual_response1, expected_response1)
-        self.assertEqual(actual_response2, expected_response2)
+        self.assertEqual(actual_response2, expected_response2, "Mismatch in job 2 formatting")
 
 if __name__ == "__main__":
     unittest.main()
