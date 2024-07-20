@@ -1,3 +1,16 @@
+# Ignore Python cache files
 __pycache__/
 
+# Ignore test database
 test_job_tracker.db
+
+# Ignore virtual environment directory
+.venv/
+
+# Ignore user-specific settings in the .idea directory
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+
+# Do not ignore .iml files located in module directories
+!.idea/*.iml

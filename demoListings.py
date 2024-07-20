@@ -4,6 +4,7 @@ from listings import setListings
 
 app = Flask(__name__)
 
+
 @app.route('/display-jobs')
 def display_jobs():
     setListings()
@@ -16,10 +17,8 @@ def display_jobs():
 
     conn.close()
 
-    # Print fetched data for debugging
-    print("Jobs:", jobs)
-
     return render_template('display_jobs.html', jobs=jobs)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
