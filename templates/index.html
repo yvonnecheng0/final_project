@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Interview Practice</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #343a40;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .btn-primary, .btn-success, .btn-danger {
+            width: 100%;
+        }
+        #audioPlayback {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .feedback {
+            margin-top: 20px;
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mock Behavioral Interview Practice</h1>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Chat with the Bot</h5>
+                <div class="form-group">
+                    <input type="text" id="chatInput" class="form-control" placeholder="Type your message here...">
+                </div>
+                <button onclick="sendMessage()" class="btn btn-primary">Send</button>
+                <div id="chatReply" class="feedback"></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Record Your Answer</h5>
+                <button onclick="startRecording()" class="btn btn-success">Start Recording</button>
+                <button onclick="stopRecording()" class="btn btn-danger mt-2">Stop Recording</button>
+                <audio id="audioPlayback" controls></audio>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        async function sendMessage() {
+            const message = document.getElementById('chatInput').value;
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+            const data = await response.json();
+            const chatReplyDiv = document.getElementById('chatReply');
+            const reply = document.createElement('p');
+            reply.innerText = data.reply;
+            chatReplyDiv.appendChild(reply);
+        }
+
+        async function startRecording() {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+
+            mediaRecorder.ondataavailable = event => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(recordedChunks);
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audioPlayback = document.getElementById('audioPlayback');
+                audioPlayback.src = audioUrl;
+            };
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
