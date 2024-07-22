@@ -1,17 +1,12 @@
 from flask import Flask, request, jsonify, render_template
 import openai
 import logging
-from dotenv import load_dotenv
-import os
-
-# Load environment variables from .env file
-load_dotenv()
 
 # Initialize the Flask application
 app = Flask(__name__)
 
-# Set the OpenAI API key from environment variables
-openai.api_key = os.getenv('OPENAI_API_KEY')
+# Set the OpenAI API key directly in the code (for testing purposes)
+openai.api_key = 'sk-None-rtBK2vEtJkd8CyNJuCF1T3BlbkFJa0YanXhDhRj3BQN1i6cF' 
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -45,7 +40,6 @@ def chat():
 if __name__ == '__main__':
     # Run the Flask application in debug mode
     app.run(debug=True)
-
 
 
 
