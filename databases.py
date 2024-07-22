@@ -1,8 +1,10 @@
 import sqlite3
 import os
 from datetime import date
+from argon2 import PasswordHasher
 
 DEFAULT_DB = "job_tracker.db"
+ph = PasswordHasher()
 
 
 def create_tables(db=DEFAULT_DB):
@@ -51,8 +53,9 @@ def register_user(username, email, password, db=DEFAULT_DB):
     conn = sqlite3.connect(db)
     c = conn.cursor()
     try:
+        hashed_password = ph.hash(password)
         c.execute('''INSERT INTO users (username, email, password) VALUES (?, ?, ?)''',
-                  (username, email, password))
+                  (username, email, hashed_password))
         conn.commit()
     except sqlite3.IntegrityError as e:
         if 'UNIQUE constraint failed' in str(e):
@@ -77,6 +80,27 @@ def is_user(id_or_username, db=DEFAULT_DB):
     conn.close()
 
     return result is not None
+
+
+def find_user_by_username(username, db=DEFAULT_DB):
+    conn = sqlite3.connect(db)
+    c = conn.cursor()
+    c.execute('SELECT * FROM users WHERE username = ?', (username,))
+    user = c.fetchone()
+    conn.close()
+    return user
+
+
+def verify_user(username, password, db=DEFAULT_DB):
+    user = find_user_by_username(username, db)
+    if user:
+        hashed_password = user[3]  # assuming password is the 4th column
+        try:
+            ph.verify(hashed_password, password)
+            return True
+        except:
+            return False
+    return False
 
 
 # Removes a user to users database, returns 1 if user doesn't exist, returns 2 if unknown failure
