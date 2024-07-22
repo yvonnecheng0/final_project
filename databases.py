@@ -45,6 +45,27 @@ def create_tables(db=DEFAULT_DB):
                     FOREIGN KEY (job_id) REFERENCES jobs(id)
                 )''')
 
+    c.execute('''CREATE VIEW IF NOT EXISTS applications_jobs_view AS
+                     SELECT applications.id AS application_id,
+                            applications.job_id,
+                            applications.application_date,
+                            applications.status,
+                            applications.date_last_updated,
+                            applications.recruiter_name,
+                            applications.recruiter_email,
+                            jobs.posted AS job_posted,
+                            jobs.updated AS job_updated,
+                            jobs.company AS job_company,
+                            jobs.title AS job_title,
+                            jobs.season AS job_season,
+                            jobs.sponsorship AS job_sponsorship,
+                            jobs.active AS job_active,
+                            jobs.locations AS job_locations,
+                            jobs.url AS job_url
+                     FROM applications
+                     JOIN jobs ON applications.job_id = jobs.id
+                  ''')
+
 
 def register_user(username, email, password, db=DEFAULT_DB):
     """Adds a new user to users table, if user already exists return 1 as error code, return 2 if unknown failure"""

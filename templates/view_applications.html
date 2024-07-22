@@ -8,25 +8,43 @@
     <table>
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Application ID</th>
                 <th>Job ID</th>
                 <th>Application Date</th>
                 <th>Status</th>
                 <th>Date Last Updated</th>
                 <th>Recruiter Name</th>
                 <th>Recruiter Email</th>
+                <th>Job Posted</th>
+                <th>Job Updated</th>
+                <th>Company</th>
+                <th>Title</th>
+                <th>Season</th>
+                <th>Sponsorship</th>
+                <th>Active</th>
+                <th>Locations</th>
+                <th>URL</th>
             </tr>
         </thead>
         <tbody>
             {% for app in applications %}
                 <tr>
                     <td>{{ app[0] }}</td>
+                    <td>{{ app[1] }}</td>
                     <td>{{ app[2] }}</td>
                     <td>{{ app[3] }}</td>
                     <td>{{ app[4] }}</td>
                     <td>{{ app[5] }}</td>
                     <td>{{ app[6] }}</td>
                     <td>{{ app[7] }}</td>
+                    <td>{{ app[8] }}</td>
+                    <td>{{ app[9] }}</td>
+                    <td>{{ app[10] }}</td>
+                    <td>{{ app[11] }}</td>
+                    <td>{{ app[12] }}</td>
+                    <td>{{ app[13] }}</td>
+                    <td>{{ app[14] }}</td>
+                    <td><a href="{{ app[15] }}" target="_blank">Link</a></td>
                 </tr>
             {% endfor %}
         </tbody>

@@ -69,7 +69,8 @@ def show_applications():
     user_id = user[0]
     conn = sqlite3.connect('job_tracker.db')
     cur = conn.cursor()
-    cur.execute('''SELECT * FROM applications WHERE user_id = ?''', (user_id,))
+    cur.execute('''SELECT * FROM applications_jobs_view WHERE application_id IN 
+                       (SELECT id FROM applications WHERE user_id = ?)''', (user_id,))
     applications = cur.fetchall()
     conn.close()
     return render_template('view_applications.html', applications=applications)
