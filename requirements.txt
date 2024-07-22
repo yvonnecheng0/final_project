@@ -5,3 +5,5 @@ Flask~=3.0.3
 argon2-cffi==23.1.0
 
 argon2-cffi-bindings==21.2.0
+
+zxcvbn==4.4.28

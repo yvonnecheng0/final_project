@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display Jobs</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Display Jobs{% endblock %}
+
+{% block content %}
+    <a href="{{ url_for('my_home') }}">Return to Home</a>
     <h1>Jobs Table</h1>
 
-    <table border="1">
+    <table>
         <thead>
             <tr>
                 <th>ID</th>
@@ -40,5 +38,4 @@
             {% endfor %}
         </tbody>
     </table>
-</body>
-</html>
+{% endblock %}

@@ -5,6 +5,15 @@
 </head>
 <body>
     <h2>Register</h2>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div style="color: red;">
+                <p>{{ messages[-1] }}</p>
+            </div>
+        {% endif %}
+    {% endwith %}
+
     <form method="post">
         <div>
             <label for="login">Username</label>
@@ -21,6 +30,9 @@
         </div>
         <button type="submit">Register</button>
     </form>
+
+    <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+
     <script>
         function toggleVisibility() {
             var password = document.getElementById("password");

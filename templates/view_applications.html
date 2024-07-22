@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Your Applications{% endblock %}
+
+{% block content %}
+    <a href="{{ url_for('my_home') }}">Return to Home</a>
+    <h1>Your Applications</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Job ID</th>
+                <th>Application Date</th>
+                <th>Status</th>
+                <th>Date Last Updated</th>
+                <th>Recruiter Name</th>
+                <th>Recruiter Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+                <tr>
+                    <td>{{ app[0] }}</td>
+                    <td>{{ app[2] }}</td>
+                    <td>{{ app[3] }}</td>
+                    <td>{{ app[4] }}</td>
+                    <td>{{ app[5] }}</td>
+                    <td>{{ app[6] }}</td>
+                    <td>{{ app[7] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
