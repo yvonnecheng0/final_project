@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import sqlite3
 from listings import setListings
-from databases import register_user, verify_user, find_user_by_username
+from databases import register_user, verify_user, find_user_by_username, quick_add_app, is_application, \
+    get_user_id_by_username
 
 app = Flask(__name__)
 app.secret_key = '072e2133647804bfed29c69aed595c28'
@@ -72,6 +73,24 @@ def show_applications():
     applications = cur.fetchall()
     conn.close()
     return render_template('view_applications.html', applications=applications)
+
+
+@app.route('/add-application/<int:job_id>', methods=['POST'])
+def add_application(job_id):
+    if 'user' not in session:
+        flash('You must be logged in to apply for a job.')
+        return redirect(url_for('login'))
+
+    username = session['user']
+    user_id = get_user_id_by_username(username)
+
+    if is_application(user_id, job_id):
+        flash('You have already applied for this job.')
+        return redirect(url_for('display_jobs'))
+
+    quick_add_app(user_id, job_id)
+    flash('Application submitted successfully!')
+    return redirect(url_for('display_jobs'))
 
 
 @app.route('/logout')
