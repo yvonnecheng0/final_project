@@ -2,10 +2,26 @@
 <html lang="en">
 <head>
     <title>Register</title>
+    <style>
+        .error {
+            color: red;
+            display: none;
+        }
+        #message {
+            display: none;
+            color: red;
+        }
+        .invalid {
+            color: red;
+        }
+        .valid {
+            color: green;
+        }
+    </style>
 </head>
 <body>
     <h2>Register</h2>
-    
+
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <div style="color: red;">
@@ -14,7 +30,7 @@
         {% endif %}
     {% endwith %}
 
-    <form method="post">
+    <form id="registerForm" method="post">
         <div>
             <label for="login">Username</label>
             <input id="login" name="login" type="text" required minlength="5" maxlength="100">
@@ -22,11 +38,20 @@
         <div>
             <label for="email">Email</label>
             <input id="email" name="email" type="email" required>
+            <div id="emailError" class="error">Please enter a valid email address.</div>
         </div>
         <div>
             <label for="password">Password</label>
             <input id="password" name="password" type="password" required minlength="8" maxlength="128">
             <input type="checkbox" onclick="toggleVisibility()">Show Password
+            <div id="message">
+                <h3>Password must contain the following:</h3>
+                <p id="letter" class="invalid">A <b>lowercase</b> letter</p>
+                <p id="capital" class="invalid">A <b>capital (uppercase)</b> letter</p>
+                <p id="number" class="invalid">A <b>number</b></p>
+                <p id="special" class="invalid">A <b>special character (!@#$%^&*(),.?":{}|<>) </b></p>
+                <p id="length" class="invalid">Minimum <b>8 characters</b></p>
+            </div>
         </div>
         <button type="submit">Register</button>
     </form>
@@ -42,6 +67,46 @@
                 password.type = "password";
             }
         }
+
+        function validatePassword() {
+            var password = document.getElementById("password").value;
+            var letter = /[a-z]/;
+            var capital = /[A-Z]/;
+            var number = /[0-9]/;
+            var special = /[!@#$%^&*(),.?":{}|<>]/;
+            var length = /.{8,}/;
+
+            document.getElementById("letter").className = letter.test(password) ? "valid" : "invalid";
+            document.getElementById("capital").className = capital.test(password) ? "valid" : "invalid";
+            document.getElementById("number").className = number.test(password) ? "valid" : "invalid";
+            document.getElementById("special").className = special.test(password) ? "valid" : "invalid";
+            document.getElementById("length").className = length.test(password) ? "valid" : "invalid";
+
+            return letter.test(password) && capital.test(password) && number.test(password) && special.test(password) && length.test(password);
+        }
+
+        document.getElementById("registerForm").addEventListener("submit", function(event) {
+            var email = document.getElementById("email");
+            var emailError = document.getElementById("emailError");
+
+            if (!email.checkValidity()) {
+                emailError.style.display = "block";
+                event.preventDefault();
+            } else {
+                emailError.style.display = "none";
+            }
+
+            if (!validatePassword()) {
+                document.getElementById("message").style.display = "block";
+                event.preventDefault();
+            } else {
+                document.getElementById("message").style.display = "none";
+            }
+        });
+
+        document.getElementById("password").addEventListener("input", function() {
+            validatePassword();
+        });
     </script>
 </body>
 </html>
