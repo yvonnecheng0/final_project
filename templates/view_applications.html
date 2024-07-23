@@ -3,50 +3,75 @@
 {% block title %}Your Applications{% endblock %}
 
 {% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_apps.css') }}">
     <a href="{{ url_for('my_home') }}">Return to Home</a>
     <h1>Your Applications</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Application ID</th>
-                <th>Job ID</th>
-                <th>Application Date</th>
-                <th>Status</th>
-                <th>Date Last Updated</th>
-                <th>Recruiter Name</th>
-                <th>Recruiter Email</th>
-                <th>Job Posted</th>
-                <th>Job Updated</th>
-                <th>Company</th>
-                <th>Title</th>
-                <th>Season</th>
-                <th>Sponsorship</th>
-                <th>Active</th>
-                <th>Locations</th>
-                <th>URL</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for app in applications %}
+
+    <div class="checkbox-container">
+        <label><input type="checkbox" class="toggle-column" data-column="application_id" checked> Application ID</label>
+        <label><input type="checkbox" class="toggle-column" data-column="job_id" checked> Job ID</label>
+        <label><input type="checkbox" class="toggle-column" data-column="application_date" checked> Application Date</label>
+        <label><input type="checkbox" class="toggle-column" data-column="status" checked> Status</label>
+        <label><input type="checkbox" class="toggle-column" data-column="date_last_updated" checked> Date Last Updated</label>
+        <label><input type="checkbox" class="toggle-column" data-column="recruiter_name" checked> Recruiter Name</label>
+        <label><input type="checkbox" class="toggle-column" data-column="recruiter_email" checked> Recruiter Email</label>
+        <label><input type="checkbox" class="toggle-column" data-column="job_posted" checked> Job Posted</label>
+        <label><input type="checkbox" class="toggle-column" data-column="job_updated" checked> Job Updated</label>
+        <label><input type="checkbox" class="toggle-column" data-column="company" checked> Company</label>
+        <label><input type="checkbox" class="toggle-column" data-column="title" checked> Title</label>
+        <label><input type="checkbox" class="toggle-column" data-column="season" checked> Season</label>
+        <label><input type="checkbox" class="toggle-column" data-column="sponsorship" checked> Sponsorship</label>
+        <label><input type="checkbox" class="toggle-column" data-column="active" checked> Active</label>
+        <label><input type="checkbox" class="toggle-column" data-column="locations" checked> Locations</label>
+        <label><input type="checkbox" class="toggle-column" data-column="url" checked> URL</label>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ app[0] }}</td>
-                    <td>{{ app[1] }}</td>
-                    <td>{{ app[2] }}</td>
-                    <td>{{ app[3] }}</td>
-                    <td>{{ app[4] }}</td>
-                    <td>{{ app[5] }}</td>
-                    <td>{{ app[6] }}</td>
-                    <td>{{ app[7] }}</td>
-                    <td>{{ app[8] }}</td>
-                    <td>{{ app[9] }}</td>
-                    <td>{{ app[10] }}</td>
-                    <td>{{ app[11] }}</td>
-                    <td>{{ app[12] }}</td>
-                    <td>{{ app[13] }}</td>
-                    <td>{{ app[14] }}</td>
-                    <td><a href="{{ app[15] }}" target="_blank">Link</a></td>
+                    <th class="application_id">Application ID</th>
+                    <th class="job_id">Job ID</th>
+                    <th class="application_date">Application Date</th>
+                    <th class="status">Status</th>
+                    <th class="date_last_updated">Date Last Updated</th>
+                    <th class="recruiter_name">Recruiter Name</th>
+                    <th class="recruiter_email">Recruiter Email</th>
+                    <th class="job_posted">Job Posted</th>
+                    <th class="job_updated">Job Updated</th>
+                    <th class="company">Company</th>
+                    <th class="title">Title</th>
+                    <th class="season">Season</th>
+                    <th class="sponsorship">Sponsorship</th>
+                    <th class="active">Active</th>
+                    <th class="locations">Locations</th>
+                    <th class="url">URL</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                    <tr>
+                        <td class="application_id">{{ app[0] }}</td>
+                        <td class="job_id">{{ app[1] }}</td>
+                        <td class="application_date">{{ app[2] }}</td>
+                        <td class="status">{{ app[3] }}</td>
+                        <td class="date_last_updated">{{ app[4] }}</td>
+                        <td class="recruiter_name">{{ app[5] }}</td>
+                        <td class="recruiter_email">{{ app[6] }}</td>
+                        <td class="job_posted">{{ app[7] }}</td>
+                        <td class="job_updated">{{ app[8] }}</td>
+                        <td class="company">{{ app[9] }}</td>
+                        <td class="title">{{ app[10] }}</td>
+                        <td class="season">{{ app[11] }}</td>
+                        <td class="sponsorship">{{ app[12] }}</td>
+                        <td class="active">{{ app[13] }}</td>
+                        <td class="locations">{{ app[14] }}</td>
+                        <td class="url"><a href="{{ app[15] }}" target="_blank">Link</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/toggleColumns.js') }}"></script>
 {% endblock %}
