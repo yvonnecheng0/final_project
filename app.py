@@ -6,8 +6,9 @@ from databases import register_user, verify_user, find_user_by_username, quick_a
 
 app = Flask(__name__)
 app.secret_key = '072e2133647804bfed29c69aed595c28'
-
+load_dotenv()
 set_listings()
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def init_sqlite_db():
     conn = sqlite3.connect('leetcode.db')
@@ -18,7 +19,7 @@ def init_sqlite_db():
     conn.close()
 
 init_sqlite_db()
-
+logging.basicConfig(level=logging.DEBUG)
 @app.route('/')
 def my_home():
     if 'user' not in session:
