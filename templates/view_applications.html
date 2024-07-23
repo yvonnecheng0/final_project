@@ -54,10 +54,10 @@
                         <td class="application_id">{{ app[0] }}</td>
                         <td class="job_id">{{ app[1] }}</td>
                         <td class="application_date">{{ app[2] }}</td>
-                        <td class="status">{{ app[3] }}</td>
+                        <td class="status editable" data-id="{{ app[0] }}" data-column="status">{{ app[3] }}</td>
                         <td class="date_last_updated">{{ app[4] }}</td>
-                        <td class="recruiter_name">{{ app[5] }}</td>
-                        <td class="recruiter_email">{{ app[6] }}</td>
+                        <td class="recruiter_name editable" data-id="{{ app[0] }}" data-column="recruiter_name">{{ app[5] }}</td>
+                        <td class="recruiter_email editable" data-id="{{ app[0] }}" data-column="recruiter_email">{{ app[6] }}</td>
                         <td class="job_posted">{{ app[7] }}</td>
                         <td class="job_updated">{{ app[8] }}</td>
                         <td class="company">{{ app[9] }}</td>
@@ -74,4 +74,5 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/toggleColumns.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/editApps.js') }}"></script>
 {% endblock %}
