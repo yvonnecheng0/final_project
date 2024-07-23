@@ -15,7 +15,7 @@ init_sqlite_db()
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('leetcode_tracker.html')
 
 @app.route('/add-problem/', methods=['POST'])
 def add_problem():
