@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Leetcode Tracker</title>
+  </head>
+  <body>
+    <div>
+      <h2>Leetcode Problem Tracker</h2>
+      <form action="/add-problem/" method="post">
+        <label for="name">Problem Name:</label><br>
+        <input type="text" id="name" name="name"><br>
+        <label for="difficulty">Difficulty:</label><br>
+        <select id="difficulty" name="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select><br>
+        <label for="time_taken">Time Taken (minutes):</label><br>
+        <input type="number" id="time_taken" name="time_taken"><br><br>
+        <input type="submit" value="Add Problem">
+      </form>
+    </div>
+  </body>
+</html>

@@ -1,2 +1,15 @@
+
+# Ignore Python cache files
 __pycache__/
+
+# Ignore test database
+test_job_tracker.db
+
+# Ignore virtual environment directory
+.venv/
+
+# Ignore PyCharm IDE settings
+.idea/
+
 .env
+
