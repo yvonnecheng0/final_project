@@ -1,0 +1,3 @@
+[submodule "job_spy/JobSpy"]
+	path = job_spy/JobSpy
+	url = https://github.com/Bunsly/JobSpy.git
