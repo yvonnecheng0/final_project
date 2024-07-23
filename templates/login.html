@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div style="color: red;">
+                <p>{{ messages[-1] }}</p>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="post">
+        <div>
+            <label for="login">Username</label>
+            <input id="login" name="login" type="text" required minlength="5" maxlength="100">
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" required minlength="8" maxlength="128">
+            <input type="checkbox" onclick="toggleVisibility()">Show Password
+        </div>
+        <button type="submit">Login</button>
+    </form>
+
+    <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+
+    <script>
+        function toggleVisibility() {
+            var password = document.getElementById("password");
+            if (password.type === "password") {
+                password.type = "text";
+            } else {
+                password.type = "password";
+            }
+        }
+    </script>
+</body>
+</html>

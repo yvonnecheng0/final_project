@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display Jobs</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Display Jobs{% endblock %}
+
+{% block content %}
+    <a href="{{ url_for('my_home') }}">Return to Home</a>
     <h1>Jobs Table</h1>
 
-    <table border="1">
+    <table>
         <thead>
             <tr>
                 <th>ID</th>
@@ -21,6 +19,7 @@
                 <th>Active</th>
                 <th>Locations</th>
                 <th>URL</th>
+                <th>Actions</th> <!-- New column for buttons -->
             </tr>
         </thead>
         <tbody>
@@ -36,9 +35,29 @@
                 <td>{{ job[7] }}</td>
                 <td>{{ job[8] }}</td>
                 <td>{{ job[9] }}</td>
+                <td>
+                    <form action="{{ url_for('add_application', job_id=job[0]) }}" method="post" onsubmit="saveScrollPosition()">
+                        <button type="submit">Apply</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-</body>
-</html>
+
+    <script>
+        // Save scroll position to local storage before form submission
+        function saveScrollPosition() {
+            localStorage.setItem('scrollPosition', window.scrollY);
+        }
+
+        // Restore scroll position after page load
+        window.onload = function() {
+            var scrollPosition = localStorage.getItem('scrollPosition');
+            if (scrollPosition) {
+                window.scrollTo(0, parseInt(scrollPosition));
+                localStorage.removeItem('scrollPosition'); // Clear the saved position
+            }
+        };
+    </script>
+{% endblock %}

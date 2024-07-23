@@ -5,8 +5,9 @@ from databases import *
 
 REPO_URL = "https://raw.githubusercontent.com/Ouckah/Summer2025-Internships/main/.github/scripts/listings.json"
 
-# Pulls the JSON info from the REPO_URL and handles errors
+
 def fetch_listings(url):
+    """Pulls the JSON from the REPO_URL and prints errors to terminal, returns JSON response as list"""
     response = requests.get(url)
     if response.status_code == 200:
         try:
@@ -14,16 +15,17 @@ def fetch_listings(url):
         except json.JSONDecodeError as e:
             print("Error decoding JSON:", e)
             return []
-    elif (response.status_code == 400):
+    elif response.status_code == 400:
         print("Client Error!!")
-    elif (response.status_code == 500):
+    elif response.status_code == 500:
         print("Server Error!")
     else:
         print(f"Failed to fetch listings: {response.status_code}")
     return []
 
-# Parses through a single listing and formats the data. Returns relevant data as dictionary
+
 def format_listing(listing):
+    """Parses through a single listing and formats the data. Returns relevant data as dictionary"""
     date_posted = datetime.fromtimestamp(listing['date_posted'], timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z')
     date_updated = datetime.fromtimestamp(listing['date_updated'], timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z')
     company_name = listing["company_name"]
@@ -45,14 +47,15 @@ def format_listing(listing):
         "sponsorship": sponsored
     }
 
-# Gets the n most recently posted internship listings
+
 def get_most_recent_listings(listings, n):
+    """Returns the n most recently updated internship listings as a list"""
     listings_sorted = sorted(listings, key=lambda x: x['date_updated'], reverse=True)
     return listings_sorted[:n]
 
-# Method to initialize everything, deletes previous jobs_tracker.db if it existed
-def setListings():
-    reset_all("job_tracker.db")
+
+def set_listings():
+    """Initializes everything, creates jobs_tracker.db if it didn't exist before"""
     create_tables()
     listings = fetch_listings(REPO_URL)
     for listing in listings:
