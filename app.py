@@ -7,6 +7,8 @@ import openai
 import logging
 from dotenv import load_dotenv
 import os
+import git 
+
 app = Flask(__name__)
 app.secret_key = '072e2133647804bfed29c69aed595c28'
 load_dotenv()
@@ -177,6 +179,16 @@ def chat():
         logging.error(f"Error in chat endpoint: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route("/update_server", methods=['POST'])
+def webhook():
+    if request.method == 'POST':
+        repo = git.Repo('/home/CHANGE_TO_PYTHON_ANYWHERE_USERNAME/CHANGE_TO_GITHUB_REPO_NAME')
+        origin = repo.remotes.origin
+        origin.pull()
+        return 'Updated PythonAnywhere successfully', 200
+    else:
+        return 'Wrong event type', 400
 
 if __name__ == '__main__':
     app.run(debug=True)
+
