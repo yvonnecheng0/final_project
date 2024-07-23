@@ -3,7 +3,10 @@ import sqlite3
 from listings import set_listings
 from databases import register_user, verify_user, find_user_by_username, quick_add_app, is_application, \
     get_user_id_by_username, update_application_status, update_recruiter_info
-
+import openai
+import logging
+from dotenv import load_dotenv
+import os
 app = Flask(__name__)
 app.secret_key = '072e2133647804bfed29c69aed595c28'
 load_dotenv()
