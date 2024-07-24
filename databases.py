@@ -66,6 +66,15 @@ def create_tables(db=DEFAULT_DB):
                      JOIN jobs ON applications.job_id = jobs.id
                   ''')
 
+    c.execute('''CREATE TABLE IF NOT EXISTS leetcode (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    name TEXT NOT NULL,
+                    difficulty TEXT NOT NULL,
+                    time_taken INTEGER NOT NULL,
+                    FOREIGN KEY (user_id) REFERENCES users(id)
+                )''')
+
 
 def register_user(username, email, password, db=DEFAULT_DB):
     """Adds a new user to users table, if user already exists return 1 as error code, return 2 if unknown failure"""

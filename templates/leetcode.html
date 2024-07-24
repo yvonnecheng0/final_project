@@ -1,26 +1,98 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Leetcode Tracker</title>
-  </head>
-  <body>
-    <div>
-      <h2>Leetcode Problem Tracker</h2>
-      <form action="/add-problem/" method="post">
-        <label for="name">Problem Name:</label><br>
-        <input type="text" id="name" name="name"><br>
-        <label for="difficulty">Difficulty:</label><br>
-        <select id="difficulty" name="difficulty">
-          <option value="easy">Easy</option>
-          <option value="medium">Medium</option>
-          <option value="hard">Hard</option>
-        </select><br>
-        <label for="time_taken">Time Taken (minutes):</label><br>
-        <input type="number" id="time_taken" name="time_taken"><br><br>
-        <input type="submit" value="Add Problem">
-      </form>
-    </div>
-  </body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Leetcode Tracker{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Leetcode Problem Tracker</h2>
+
+  <!-- Form to add a new problem -->
+  <form action="/add-problem/" method="post">
+    <label for="name">Problem Name:</label>
+    <input type="text" id="name" name="name" required>
+    
+    <label for="difficulty">Difficulty:</label>
+    <select id="difficulty" name="difficulty" required>
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+    
+    <label for="time_taken">Time Taken (minutes):</label>
+    <input type="number" id="time_taken" name="time_taken" required>
+    
+    <input type="submit" value="Add Problem">
+  </form>
+
+  <h3>Your Problems</h3>
+  <!-- Table to display the list of problems -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Problem Name</th>
+        <th>Difficulty</th>
+        <th>Time Taken (minutes)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if problems %}
+        {% for problem in problems %}
+          <tr>
+            <td>{{ problem[0] }}</td>
+            <td>{{ problem[1] }}</td>
+            <td>{{ problem[2] }}</td>
+            <td>{{ problem[3] }}</td>
+            <td>
+              <!-- Delete Button -->
+              <form action="/delete-problem/{{ problem[0] }}" method="post" style="display:inline;">
+                <input type="submit" value="Delete">
+              </form>
+
+              <!-- Update Button with a form to edit problem details -->
+              <button type="button" onclick="toggleUpdateForm('{{ problem[0] }}')">Update</button>
+
+              <!-- Update Form, initially hidden -->
+              <div id="update-form-{{ problem[0] }}" style="display:none;">
+                <form action="/update-problem/{{ problem[0] }}" method="post">
+                    <label>
+                        <input type="text" name="name" placeholder="New name" value="{{ problem[1] }}">
+                    </label>
+                    <label>
+                        <select name="difficulty">
+                          <option value="easy" {% if problem[2] == 'easy' %}selected{% endif %}>Easy</option>
+                          <option value="medium" {% if problem[2] == 'medium' %}selected{% endif %}>Medium</option>
+                          <option value="hard" {% if problem[2] == 'hard' %}selected{% endif %}>Hard</option>
+                        </select>
+                    </label>
+                    <label>
+                        <input type="number" name="time_taken" placeholder="New time" value="{{ problem[3] }}">
+                    </label>
+                    <input type="submit" value="Update">
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td colspan="5">No problems added yet.</td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <!-- JavaScript to toggle the visibility of the update form -->
+  <script>
+    function toggleUpdateForm(problemId) {
+      var form = document.getElementById('update-form-' + problemId);
+      if (form.style.display === 'none' || form.style.display === '') {
+        form.style.display = 'block';
+      } else {
+        form.style.display = 'none';
+      }
+    }
+  </script>
+</div>
+{% endblock %}

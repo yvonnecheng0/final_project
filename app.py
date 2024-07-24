@@ -7,7 +7,9 @@ import openai
 import logging
 from dotenv import load_dotenv
 import os
-import git 
+import git
+
+from problems_leet import get_problems_by_user, add_problem, delete_problem, update_problem
 
 app = Flask(__name__)
 load_dotenv()
@@ -18,16 +20,9 @@ app.secret_key = '072e2133647804bfed29c69aed595c28'
 set_listings()
 
 
-def init_sqlite_db():
-    conn = sqlite3.connect('leetcode.db')
-    print("Opened database successfully")
-
-    conn.execute('CREATE TABLE IF NOT EXISTS problems (name TEXT, difficulty TEXT, time_taken INTEGER)')
-    print("Table created successfully")
-    conn.close()
-
-init_sqlite_db()
 logging.basicConfig(level=logging.DEBUG)
+
+
 @app.route('/')
 def my_home():
     if 'user' not in session:
@@ -35,25 +30,60 @@ def my_home():
     return render_template('user_home.html')
 
 
-@app.route('/add-problem/', methods=['POST'])
-def add_problem():
-    if request.method == 'POST':
-        try:
-            name = request.form['name']
-            difficulty = request.form['difficulty']
-            time_taken = request.form['time_taken']
+@app.route('/leetcode/')
+def leetcode():
+    if 'user' not in session:
+        return redirect(url_for('login'))
 
-            with sqlite3.connect('leetcode.db') as con:
-                cur = con.cursor()
-                cur.execute("INSERT INTO problems (name, difficulty, time_taken) VALUES (?, ?, ?)", (name, difficulty, time_taken))
-                con.commit()
-                msg = "Record successfully added."
-        except:
-            con.rollback()
-            msg = "Error occurred in insert operation"
-        finally:
-            con.close()
-            return redirect(url_for('home'))
+    user_id = get_user_id_by_username(session['user'])
+    problems = get_problems_by_user(user_id)
+
+    return render_template('leetcode.html', problems=problems)
+
+
+@app.route('/add-problem/', methods=['POST'])
+def add_problem_route():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    user_id = get_user_id_by_username(session['user'])
+    name = request.form['name']
+    difficulty = request.form['difficulty']
+    time_taken = request.form['time_taken']
+
+    result = add_problem(user_id, name, difficulty, time_taken)
+    if result == 0:
+        flash("Problem successfully added.")
+    else:
+        flash(result)
+
+    return redirect(url_for('leetcode'))
+
+
+@app.route('/delete-problem/<int:problem_id>', methods=['POST'])
+def delete_problem_route(problem_id):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    message = delete_problem(problem_id)
+    flash(message)
+    return redirect(url_for('leetcode'))
+
+
+@app.route('/update-problem/<int:problem_id>', methods=['POST'])
+def update_problem_route(problem_id):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    name = request.form.get('name')
+    difficulty = request.form.get('difficulty')
+    time_taken = request.form.get('time_taken')
+
+    message = update_problem(problem_id, name, difficulty, time_taken)
+    flash(message)
+    return redirect(url_for('leetcode'))
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -89,7 +119,12 @@ def display_jobs():
         return redirect(url_for('login'))
     conn = sqlite3.connect('job_tracker.db')
     cur = conn.cursor()
-    cur.execute('SELECT * FROM jobs')
+    cur.execute('''
+            SELECT id, posted, updated, company, title, season, sponsorship, locations, url 
+            FROM jobs 
+            WHERE active = 1 
+            ORDER BY posted DESC
+        ''')
     jobs = cur.fetchall()
     conn.close()
     return render_template('display_jobs.html', jobs=jobs)
@@ -157,6 +192,7 @@ def update_application():
 def logout():
     # Clear the user from the session
     session.pop('user', None)
+    flash('You have been logged out.')
     return redirect(url_for('login'))
 
 
@@ -168,12 +204,12 @@ def chat():
         user_message = request.json.get('message')
         if not user_message:
             return jsonify({'error': 'No message provided'}), 400
-        
+
         try:
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "system", "content": "You are a bot helping the user practice behavioral interviews for technical roles."},
                     {"role": "user", "content": user_message}
                 ]
             )
@@ -194,6 +230,6 @@ def webhook():
     else:
         return 'Wrong event type', 400
 
+
 if __name__ == '__main__':
     app.run(debug=True)
-

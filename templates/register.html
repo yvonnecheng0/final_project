@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
         .error {
             color: red;
-            display: none;
         }
         #message {
             display: none;
@@ -20,43 +22,45 @@
     </style>
 </head>
 <body>
-    <h2>Register</h2>
+    <div class="login-container">
+        <h2>Register</h2>
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div style="color: red;">
-                <p>{{ messages[-1] }}</p>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="error">
+                    <p>{{ messages[-1] }}</p>
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form id="registerForm" method="post">
+            <div>
+                <label for="login">Username</label>
+                <input id="login" name="login" type="text" required minlength="5" maxlength="100">
             </div>
-        {% endif %}
-    {% endwith %}
-
-    <form id="registerForm" method="post">
-        <div>
-            <label for="login">Username</label>
-            <input id="login" name="login" type="text" required minlength="5" maxlength="100">
-        </div>
-        <div>
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" required>
-            <div id="emailError" class="error">Please enter a valid email address.</div>
-        </div>
-        <div>
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password" required minlength="8" maxlength="128">
-            <input type="checkbox" onclick="toggleVisibility()">Show Password
-            <div id="message">
-                <h3>Password must contain the following:</h3>
-                <p id="letter" class="invalid">A <b>lowercase</b> letter</p>
-                <p id="capital" class="invalid">A <b>capital (uppercase)</b> letter</p>
-                <p id="number" class="invalid">A <b>number</b></p>
-                <p id="special" class="invalid">A <b>special character (!@#$%^&*(),.?":{}|<>) </b></p>
-                <p id="length" class="invalid">Minimum <b>8 characters</b></p>
+            <div>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required>
+                <div id="emailError" class="error">Please enter a valid email address.</div>
             </div>
-        </div>
-        <button type="submit">Register</button>
-    </form>
+            <div>
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" required minlength="8" maxlength="128">
+                <input type="checkbox" onclick="toggleVisibility()">Show Password
+                <div id="message">
+                    <h3>Password must contain the following:</h3>
+                    <p id="letter" class="invalid">A <b>lowercase</b> letter</p>
+                    <p id="capital" class="invalid">A <b>capital (uppercase)</b> letter</p>
+                    <p id="number" class="invalid">A <b>number</b></p>
+                    <p id="special" class="invalid">A <b>special character (!@#$%^&*(),.?":{}|<>)</b></p>
+                    <p id="length" class="invalid">Minimum <b>8 characters</b></p>
+                </div>
+            </div>
+            <button type="submit">Register</button>
+        </form>
 
-    <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+        <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    </div>
 
     <script>
         function toggleVisibility() {
