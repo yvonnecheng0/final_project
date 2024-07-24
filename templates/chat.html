@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Mock Behavioral Interview Practice{% endblock %}
+
+{% block content %}
+    <h2>Mock Behavioral Interview Practice</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Chat with the Bot</h5>
+            <div class="form-group">
+                <input type="text" id="chatInput" class="form-control" placeholder="Type your message here...">
+            </div>
+            <button onclick="sendMessage()" class="btn btn-primary">Send</button>
+            <div id="chatReply" class="feedback"></div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Record Your Answer</h5>
+            <button onclick="startRecording()" class="btn btn-success">Start Recording</button>
+            <button onclick="stopRecording()" class="btn btn-danger mt-2">Stop Recording</button>
+            <audio id="audioPlayback" controls></audio>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        async function sendMessage() {
+            const message = document.getElementById('chatInput').value;
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+            const data = await response.json();
+            const chatReplyDiv = document.getElementById('chatReply');
+            const reply = document.createElement('p');
+            reply.innerText = data.reply;
+            chatReplyDiv.appendChild(reply);
+        }
+
+        async function startRecording() {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+
+            mediaRecorder.ondataavailable = event => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(recordedChunks);
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audioPlayback = document.getElementById('audioPlayback');
+                audioPlayback.src = audioUrl;
+            };
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+        }
+    </script>
+{% endblock %}
