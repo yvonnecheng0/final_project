@@ -160,27 +160,29 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/chat', methods=['POST'])
+@app.route('/chat', methods=['GET', 'POST'])
 def chat():
-    """
-    Endpoint to chat with the OpenAI model.
-    """
-    user_message = request.json.get('message')
-    logging.debug(f"User message: {user_message}")
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": user_message}
-            ]
-        )
-        reply = response.choices[0].message['content'].strip()
-        logging.debug(f"Bot reply: {reply}")
-        return jsonify({'reply': reply})
-    except Exception as e:
-        logging.error(f"Error in chat endpoint: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+    if request.method == 'GET':
+        return render_template('chat.html')
+    if request.method == 'POST':
+        user_message = request.json.get('message')
+        if not user_message:
+            return jsonify({'error': 'No message provided'}), 400
+        
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": user_message}
+                ]
+            )
+            reply = response.choices[0].message['content'].strip()
+            return jsonify({'reply': reply})
+        except Exception as e:
+            logging.error(f"Error in chat endpoint: {str(e)}")
+            return jsonify({'error': str(e)}), 500
+
 
 @app.route("/update_server", methods=['POST'])
 def webhook():
