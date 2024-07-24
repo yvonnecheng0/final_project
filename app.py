@@ -10,10 +10,13 @@ import os
 import git 
 
 app = Flask(__name__)
+# Set the OpenAI API key from environment variables
+openai.api_key = os.getenv('OPENAI_API_KEY')
+
 app.secret_key = '072e2133647804bfed29c69aed595c28'
 load_dotenv()
 set_listings()
-openai.api_key = os.getenv('OPENAI_API_KEY')
+
 
 def init_sqlite_db():
     conn = sqlite3.connect('leetcode.db')
