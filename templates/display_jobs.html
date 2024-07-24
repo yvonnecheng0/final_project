@@ -3,70 +3,70 @@
 {% block title %}Display Jobs{% endblock %}
 
 {% block content %}
-    <a href="{{ url_for('my_home') }}">Return to Home</a>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_apps.css') }}">
-    <h1>Jobs Table</h1>
+    <div class="container">
+        <a href="{{ url_for('my_home') }}" class="back-link">Return to Home</a>
+        <h1>Jobs Table</h1>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Posted</th>
+                        <th>Updated</th>
+                        <th>Company</th>
+                        <th>Title</th>
+                        <th>Season</th>
+                        <th>Sponsorship</th>
+                        <th>Locations</th>
+                        <th>URL</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                    <tr>
+                        <td>{{ job[0] }}</td>
+                        <td>{{ job[1] }}</td>
+                        <td>{{ job[2] }}</td>
+                        <td>{{ job[3] }}</td>
+                        <td>{{ job[4] }}</td>
+                        <td>{{ job[5] }}</td>
+                        <td>{{ job[6] }}</td>
+                        <td class="locations">{{ job[7] }}</td>
+                        <td><a href="{{ job[8] }}" target="_blank" class="job-link">Link</a></td>
+                        <td>
+                            <form action="{{ url_for('add_application', job_id=job[0]) }}" method="post" onsubmit="saveScrollPosition()">
+                                <button type="submit" class="btn btn-applied">Applied</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Posted</th>
-                    <th>Updated</th>
-                    <th>Company</th>
-                    <th>Title</th>
-                    <th>Season</th>
-                    <th>Sponsorship</th>
-                    <th>Locations</th>
-                    <th>URL</th>
-                    <th>Actions</th> <!-- New column for buttons -->
-                </tr>
-            </thead>
-            <tbody>
-                {% for job in jobs %}
-                <tr>
-                    <td>{{ job[0] }}</td>
-                    <td>{{ job[1] }}</td>
-                    <td>{{ job[2] }}</td>
-                    <td>{{ job[3] }}</td>
-                    <td>{{ job[4] }}</td>
-                    <td>{{ job[5] }}</td>
-                    <td>{{ job[6] }}</td>
-                    <td class="locations">{{ job[7] }}</td>
-                    <td><a href="{{ job[8] }}" target="_blank">Link</a></td>
-                    <td>
-                        <form action="{{ url_for('add_application', job_id=job[0]) }}" method="post" onsubmit="saveScrollPosition()">
-                            <button type="submit">Apply</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <script>
-        // Save scroll position to local storage before form submission
-        function saveScrollPosition() {
-            localStorage.setItem('scrollPosition', window.scrollY);
-        }
-
-        // Restore scroll position after page load
-        window.onload = function() {
-            var scrollPosition = localStorage.getItem('scrollPosition');
-            if (scrollPosition) {
-                window.scrollTo(0, parseInt(scrollPosition));
-                localStorage.removeItem('scrollPosition'); // Clear the saved position
+        <script>
+            // Save scroll position to local storage before form submission
+            function saveScrollPosition() {
+                localStorage.setItem('scrollPosition', window.scrollY);
             }
-        };
 
-        // Format locations with space after commas
-        document.addEventListener('DOMContentLoaded', function() {
-            const locationCells = document.querySelectorAll('.locations');
-            locationCells.forEach(cell => {
-                cell.textContent = cell.textContent.replace(/,/g, ', ');
+            // Restore scroll position after page load
+            window.onload = function() {
+                var scrollPosition = localStorage.getItem('scrollPosition');
+                if (scrollPosition) {
+                    window.scrollTo(0, parseInt(scrollPosition));
+                    localStorage.removeItem('scrollPosition'); // Clear the saved position
+                }
+            };
+
+            // Format locations with space after commas
+            document.addEventListener('DOMContentLoaded', function() {
+                const locationCells = document.querySelectorAll('.locations');
+                locationCells.forEach(cell => {
+                    cell.textContent = cell.textContent.replace(/,/g, ', ');
+                });
             });
-        });
-    </script>
+        </script>
+    </div>
 {% endblock %}

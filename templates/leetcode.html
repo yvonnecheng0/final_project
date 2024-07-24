@@ -3,27 +3,30 @@
 {% block title %}Leetcode Tracker{% endblock %}
 
 {% block content %}
-<div>
+<div class="container">
   <h2>Leetcode Problem Tracker</h2>
 
   <!-- Form to add a new problem -->
   <form action="/add-problem/" method="post">
-    <label for="name">Problem Name:</label><br>
-    <input type="text" id="name" name="name" required><br>
-    <label for="difficulty">Difficulty:</label><br>
+    <label for="name">Problem Name:</label>
+    <input type="text" id="name" name="name" required>
+    
+    <label for="difficulty">Difficulty:</label>
     <select id="difficulty" name="difficulty" required>
       <option value="easy">Easy</option>
       <option value="medium">Medium</option>
       <option value="hard">Hard</option>
-    </select><br>
-    <label for="time_taken">Time Taken (minutes):</label><br>
-    <input type="number" id="time_taken" name="time_taken" required><br><br>
+    </select>
+    
+    <label for="time_taken">Time Taken (minutes):</label>
+    <input type="number" id="time_taken" name="time_taken" required>
+    
     <input type="submit" value="Add Problem">
   </form>
 
   <h3>Your Problems</h3>
   <!-- Table to display the list of problems -->
-  <table border="1">
+  <table>
     <thead>
       <tr>
         <th>ID</th>
@@ -48,7 +51,7 @@
               </form>
 
               <!-- Update Button with a form to edit problem details -->
-              <button onclick="toggleUpdateForm({{ problem[0] }})">Update</button>
+              <button type="button" onclick="toggleUpdateForm('{{ problem[0] }}')">Update</button>
 
               <!-- Update Form, initially hidden -->
               <div id="update-form-{{ problem[0] }}" style="display:none;">
@@ -84,7 +87,7 @@
   <script>
     function toggleUpdateForm(problemId) {
       var form = document.getElementById('update-form-' + problemId);
-      if (form.style.display === 'none') {
+      if (form.style.display === 'none' || form.style.display === '') {
         form.style.display = 'block';
       } else {
         form.style.display = 'none';
