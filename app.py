@@ -53,7 +53,19 @@ def add_problem():
             msg = "Error occurred in insert operation"
         finally:
             con.close()
-            return redirect(url_for('home'))
+            return redirect(url_for('show_progress'))
+
+@app.route('/progress')
+def show_progress():
+    con = sqlite3.connect('leetcode.db')
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute("SELECT * FROM problems")
+    rows = cur.fetchall()
+    con.close()
+    return render_template('progress.html', rows=rows)
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -193,6 +205,7 @@ def webhook():
         return 'Updated PythonAnywhere successfully', 200
     else:
         return 'Wrong event type', 400
+
 
 if __name__ == '__main__':
     app.run(debug=True)

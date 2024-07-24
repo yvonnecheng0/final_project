@@ -19,7 +19,7 @@
                 <th>Active</th>
                 <th>Locations</th>
                 <th>URL</th>
-                <th>Actions</th> <!-- New column for buttons -->
+                <th>Actions</th> 
             </tr>
         </thead>
         <tbody>
@@ -34,10 +34,10 @@
                 <td>{{ job[6] }}</td>
                 <td>{{ job[7] }}</td>
                 <td>{{ job[8] }}</td>
-                <td>{{ job[9] }}</td>
+                <td><a href="{{ job[9] }}" target="_blank">Link</a></td>
                 <td>
                     <form action="{{ url_for('add_application', job_id=job[0]) }}" method="post" onsubmit="saveScrollPosition()">
-                        <button type="submit">Apply</button>
+                        <button type="submit">Applied</button>
                     </form>
                 </td>
             </tr>

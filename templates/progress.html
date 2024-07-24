@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Leetcode Progress</title>
+  </head>
+  <body>
+    <div>
+      <h2>Leetcode Progress</h2>
+      <table border="1">
+        <tr>
+          <th>Problem Name</th>
+          <th>Difficulty</th>
+          <th>Time Taken (minutes)</th>
+        </tr>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row['name'] }}</td>
+          <td>{{ row['difficulty'] }}</td>
+          <td>{{ row['time_taken'] }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      <br>
+      <a href="/">Add Another Problem</a>
+    </div>
+  </body>
+</html>
