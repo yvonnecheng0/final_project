@@ -163,7 +163,7 @@ def logout():
 @app.route('/chat', methods=['GET', 'POST'])
 def chat():
     if request.method == 'GET':
-        return render_template('chat.html')
+        return render_template('index.html')
     if request.method == 'POST':
         user_message = request.json.get('message')
         if not user_message:
