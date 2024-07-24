@@ -26,8 +26,8 @@ def fetch_listings(url):
 
 def format_listing(listing):
     """Parses through a single listing and formats the data. Returns relevant data as dictionary"""
-    date_posted = datetime.fromtimestamp(listing['date_posted'], timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z')
-    date_updated = datetime.fromtimestamp(listing['date_updated'], timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z')
+    date_posted = datetime.fromtimestamp(listing['date_posted'], timezone.utc).strftime('%Y-%m-%d')
+    date_updated = datetime.fromtimestamp(listing['date_updated'], timezone.utc).strftime('%Y-%m-%d')
     company_name = listing["company_name"]
     role_title = listing["title"]
     season = listing["season"]
