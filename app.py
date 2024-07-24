@@ -206,6 +206,9 @@ def webhook():
     else:
         return 'Wrong event type', 400
 
+@app.route('/leetcode-form')
+def leetcode_form():
+    return render_template('leetcode.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
