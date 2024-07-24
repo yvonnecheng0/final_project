@@ -119,7 +119,12 @@ def display_jobs():
         return redirect(url_for('login'))
     conn = sqlite3.connect('job_tracker.db')
     cur = conn.cursor()
-    cur.execute('SELECT * FROM jobs')
+    cur.execute('''
+            SELECT id, posted, updated, company, title, season, sponsorship, locations, url 
+            FROM jobs 
+            WHERE active = 1 
+            ORDER BY posted DESC
+        ''')
     jobs = cur.fetchall()
     conn.close()
     return render_template('display_jobs.html', jobs=jobs)
