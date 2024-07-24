@@ -17,7 +17,7 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 app.secret_key = '072e2133647804bfed29c69aed595c28'
 set_listings()
 
-
+'''
 def init_sqlite_db():
     conn = sqlite3.connect('leetcode.db')
     print("Opened database successfully")
@@ -25,9 +25,10 @@ def init_sqlite_db():
     conn.execute('CREATE TABLE IF NOT EXISTS problems (name TEXT, difficulty TEXT, time_taken INTEGER)')
     print("Table created successfully")
     conn.close()
+'''
 
+"init_sqlite_db()"
 
-init_sqlite_db()
 logging.basicConfig(level=logging.DEBUG)
 
 
