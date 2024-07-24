@@ -7,7 +7,7 @@ import openai
 import logging
 from dotenv import load_dotenv
 import os
-import git 
+import git
 
 app = Flask(__name__)
 load_dotenv()
@@ -26,13 +26,22 @@ def init_sqlite_db():
     print("Table created successfully")
     conn.close()
 
+
 init_sqlite_db()
 logging.basicConfig(level=logging.DEBUG)
+
+
 @app.route('/')
 def my_home():
     if 'user' not in session:
         return redirect(url_for('login'))
     return render_template('user_home.html')
+
+@app.route('/leetcode/')
+def leetcode():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    return render_template('leetcode.html')
 
 
 @app.route('/add-problem/', methods=['POST'])
@@ -45,7 +54,8 @@ def add_problem():
 
             with sqlite3.connect('leetcode.db') as con:
                 cur = con.cursor()
-                cur.execute("INSERT INTO problems (name, difficulty, time_taken) VALUES (?, ?, ?)", (name, difficulty, time_taken))
+                cur.execute("INSERT INTO problems (name, difficulty, time_taken) VALUES (?, ?, ?)",
+                            (name, difficulty, time_taken))
                 con.commit()
                 msg = "Record successfully added."
         except:
@@ -53,7 +63,9 @@ def add_problem():
             msg = "Error occurred in insert operation"
         finally:
             con.close()
-            return redirect(url_for('home'))
+            return redirect(url_for('leetcode'))
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -168,12 +180,12 @@ def chat():
         user_message = request.json.get('message')
         if not user_message:
             return jsonify({'error': 'No message provided'}), 400
-        
+
         try:
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "system", "content": "You are a bot helping the user practice behavioral interviews for technical roles."},
                     {"role": "user", "content": user_message}
                 ]
             )
@@ -194,6 +206,6 @@ def webhook():
     else:
         return 'Wrong event type', 400
 
+
 if __name__ == '__main__':
     app.run(debug=True)
-
