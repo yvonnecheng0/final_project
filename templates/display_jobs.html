@@ -4,46 +4,49 @@
 
 {% block content %}
     <a href="{{ url_for('my_home') }}">Return to Home</a>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_apps.css') }}">
     <h1>Jobs Table</h1>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Posted</th>
-                <th>Updated</th>
-                <th>Company</th>
-                <th>Title</th>
-                <th>Season</th>
-                <th>Sponsorship</th>
-                <th>Active</th>
-                <th>Locations</th>
-                <th>URL</th>
-                <th>Actions</th> <!-- New column for buttons -->
-            </tr>
-        </thead>
-        <tbody>
-            {% for job in jobs %}
-            <tr>
-                <td>{{ job[0] }}</td>
-                <td>{{ job[1] }}</td>
-                <td>{{ job[2] }}</td>
-                <td>{{ job[3] }}</td>
-                <td>{{ job[4] }}</td>
-                <td>{{ job[5] }}</td>
-                <td>{{ job[6] }}</td>
-                <td>{{ job[7] }}</td>
-                <td>{{ job[8] }}</td>
-                <td>{{ job[9] }}</td>
-                <td>
-                    <form action="{{ url_for('add_application', job_id=job[0]) }}" method="post" onsubmit="saveScrollPosition()">
-                        <button type="submit">Apply</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Posted</th>
+                    <th>Updated</th>
+                    <th>Company</th>
+                    <th>Title</th>
+                    <th>Season</th>
+                    <th>Sponsorship</th>
+                    <th>Active</th>
+                    <th>Locations</th>
+                    <th>URL</th>
+                    <th>Actions</th> <!-- New column for buttons -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                <tr>
+                    <td>{{ job[0] }}</td>
+                    <td>{{ job[1] }}</td>
+                    <td>{{ job[2] }}</td>
+                    <td>{{ job[3] }}</td>
+                    <td>{{ job[4] }}</td>
+                    <td>{{ job[5] }}</td>
+                    <td>{{ job[6] }}</td>
+                    <td>{{ job[7] }}</td>
+                    <td class="locations">{{ job[8] }}</td>
+                    <td><a href="{{ job[9] }}" target="_blank">Link</a></td>
+                    <td>
+                        <form action="{{ url_for('add_application', job_id=job[0]) }}" method="post" onsubmit="saveScrollPosition()">
+                            <button type="submit">Apply</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     <script>
         // Save scroll position to local storage before form submission
@@ -59,5 +62,13 @@
                 localStorage.removeItem('scrollPosition'); // Clear the saved position
             }
         };
+
+        // Format locations with space after commas
+        document.addEventListener('DOMContentLoaded', function() {
+            const locationCells = document.querySelectorAll('.locations');
+            locationCells.forEach(cell => {
+                cell.textContent = cell.textContent.replace(/,/g, ', ');
+            });
+        });
     </script>
 {% endblock %}

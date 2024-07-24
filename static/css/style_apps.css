@@ -12,7 +12,12 @@ th, td {
     padding: 8px;
     text-align: left;
     border: 1px solid #ddd;
-    white-space: nowrap;
+    white-space: nowrap; /* Prevents text from wrapping */
+}
+
+td.locations {
+    white-space: normal; /* Allows text to wrap */
+    word-wrap: break-word; /* Breaks long words and ensures wrapping */
 }
 
 .checkbox-container {

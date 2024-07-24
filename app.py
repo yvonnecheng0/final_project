@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 import os
 import git
 
+from problems_leet import get_problems_by_user, add_problem, delete_problem, update_problem
+
 app = Flask(__name__)
 load_dotenv()
 # Set the OpenAI API key from environment variables
@@ -17,17 +19,6 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 app.secret_key = '072e2133647804bfed29c69aed595c28'
 set_listings()
 
-'''
-def init_sqlite_db():
-    conn = sqlite3.connect('leetcode.db')
-    print("Opened database successfully")
-
-    conn.execute('CREATE TABLE IF NOT EXISTS problems (name TEXT, difficulty TEXT, time_taken INTEGER)')
-    print("Table created successfully")
-    conn.close()
-'''
-
-"init_sqlite_db()"
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -38,33 +29,59 @@ def my_home():
         return redirect(url_for('login'))
     return render_template('user_home.html')
 
+
 @app.route('/leetcode/')
 def leetcode():
     if 'user' not in session:
         return redirect(url_for('login'))
-    return render_template('leetcode.html')
+
+    user_id = get_user_id_by_username(session['user'])
+    problems = get_problems_by_user(user_id)
+
+    return render_template('leetcode.html', problems=problems)
 
 
 @app.route('/add-problem/', methods=['POST'])
-def add_problem():
-    if request.method == 'POST':
-        try:
-            name = request.form['name']
-            difficulty = request.form['difficulty']
-            time_taken = request.form['time_taken']
+def add_problem_route():
+    if 'user' not in session:
+        return redirect(url_for('login'))
 
-            with sqlite3.connect('leetcode.db') as con:
-                cur = con.cursor()
-                cur.execute("INSERT INTO problems (name, difficulty, time_taken) VALUES (?, ?, ?)",
-                            (name, difficulty, time_taken))
-                con.commit()
-                msg = "Record successfully added."
-        except:
-            con.rollback()
-            msg = "Error occurred in insert operation"
-        finally:
-            con.close()
-            return redirect(url_for('leetcode'))
+    user_id = get_user_id_by_username(session['user'])
+    name = request.form['name']
+    difficulty = request.form['difficulty']
+    time_taken = request.form['time_taken']
+
+    result = add_problem(user_id, name, difficulty, time_taken)
+    if result == 0:
+        flash("Problem successfully added.")
+    else:
+        flash(result)
+
+    return redirect(url_for('leetcode'))
+
+
+@app.route('/delete-problem/<int:problem_id>', methods=['POST'])
+def delete_problem_route(problem_id):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    message = delete_problem(problem_id)
+    flash(message)
+    return redirect(url_for('leetcode'))
+
+
+@app.route('/update-problem/<int:problem_id>', methods=['POST'])
+def update_problem_route(problem_id):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    name = request.form.get('name')
+    difficulty = request.form.get('difficulty')
+    time_taken = request.form.get('time_taken')
+
+    message = update_problem(problem_id, name, difficulty, time_taken)
+    flash(message)
+    return redirect(url_for('leetcode'))
 
 
 @app.route('/register', methods=['GET', 'POST'])

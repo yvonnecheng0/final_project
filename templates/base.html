@@ -10,6 +10,7 @@
         {% if session.user %}
             <span>Welcome, {{ session.user }}!</span>
             <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('my_home') }}">Return to Home</a>
         {% endif %}
     </div>
 
