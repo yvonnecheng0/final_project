@@ -192,6 +192,7 @@ def update_application():
 def logout():
     # Clear the user from the session
     session.pop('user', None)
+    flash('You have been logged out.')
     return redirect(url_for('login'))
 
 
