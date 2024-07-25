@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}The Internship Hub{% endblock %}</title>
+    
+</head>
+<body>
+    <!-- The sidebar -->
+    <div class="sidebar">
+        <a href="{{ url_for('display_jobs') }}">Job Listings</a>
+        <a href="{{ url_for('view_applications') }}">View Applications</a>
+
+    </div>
+    
+    <div class="header">
+        {% if session.user %}
+            <span>Welcome, {{ session.user }}!</span>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+    </div>
+
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

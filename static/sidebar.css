@@ -1,0 +1,174 @@
+body {
+    margin: 0;
+  }
+  
+  .archivo-black-regular {
+    font-family: "Archivo Black", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  
+  .sidebar {
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    background-color: #f1f1f1;
+
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+    font-weight: bold;
+  }
+
+  
+  .sidebar a {
+    display: block;
+    color: #dc6028;
+    padding: 16px;
+    font-style: bold;
+    text-decoration: none;
+  }
+   
+  .sidebar a.active {
+    background-color: #05a8aa;
+    color: white;
+  }
+  
+  .sidebar a:hover:not(.active) {
+    background-color: #b8d5b8;
+    color: white;
+  }
+  
+  .main-container {
+    margin-left: 200px;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 200px); /* Adjust width to account for sidebar */
+}
+
+.content-header {
+    background-color: #ffb6c1;
+    padding: 20px;
+    height: 25vh; /* Make header 25% of the viewport height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.left-align {
+    text-align: left;
+    font-weight: bold;
+    margin: 0;
+}
+
+.center-align {
+    text-align: center;
+    margin: 0;
+}
+
+.main-content {
+    flex: 1; /* Take up remaining space */
+    padding: 20px;
+    background-color: #f8f9fa;
+    overflow-y: auto;
+}
+
+.main-content h2 {
+    text-align: center;
+}
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #ffb6c1;
+    color: white;
+    width: calc(100% - 200px); /* Adjust width to account for sidebar */
+    margin-left: 200px;
+}
+
+@media screen and (max-width: 700px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    .sidebar a {
+        float: left;
+    }
+    .main-container {
+        margin-left: 0;
+        width: 100%;
+    }
+    .footer {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .sidebar a {
+        text-align: center;
+        float: none;
+    }
+}
+
+/* Login Form Styles */
+form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+form div {
+    margin-bottom: 15px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+form input[type="text"],
+form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #05a8aa;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+form button:hover {
+    background-color: #048b89;
+}
+
+form input[type="checkbox"] {
+    margin-top: 10px;
+}
+
+form p {
+    text-align: center;
+}
+
+form p a {
+    color: #05a8aa;
+    text-decoration: none;
+}
+
+form p a:hover {
+    text-decoration: underline;
+}
